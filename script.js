@@ -17,7 +17,7 @@ const startButton = document.getElementById('startButton');
 const joueur1 = document.getElementById('joueur1');
 const joueur2 = document.getElementById('joueur2');
 
-let nbLignes = document.getElementById('nbLignes');
+const nbLignes = document.getElementById('nbLignes');
 let playerTurn = document.getElementById('joueur');
 let victoryArea = document.getElementById('victoryArea');
 let playedCazes = [];
@@ -28,11 +28,12 @@ let coordY;
 
 //checkValue(nbLignes);
 
+
+
 startButton.addEventListener('click', () =>{
 	jeu(nbLignes.value);
+	console.log(nbLignes.value);
 })
-
-
 
 //////////////////////////////////////
 //					Mes fonctions						//
@@ -50,19 +51,27 @@ function jeu(nbLignes){
 	boardInit(nbLignes);
 
 	let slots = document.querySelectorAll('#slot');
+
 	playerTurn.textContent = "C'est à ton tour de jouer : " + playerEnCours.name;
+
 	slots.forEach(slot =>  {
+
 		slot.addEventListener('click', function() {
+
 			if(!endGame){
 				coordX = slot.parentNode.dataset.x;
 				coordY = slot.dataset.y;
+
 			if(playedCazes[coordX][coordY] == 0 ) {
 				playedCazes[coordX][coordY] = playerEnCours.name; 
 				slot.style.backgroundColor = playerEnCours.color;
+
 				if(checkEndGame(playedCazes, playerEnCours.name, coordX, coordY)){
 					victoryArea.textContent = playerEnCours.name + " a gagné la partie";
 				}
+
 				playerChange();
+
 			}			
 			}
 		})
@@ -111,20 +120,34 @@ function boardInit(nbLignes){
 	}
 }
 
-/**
+ /**
  * Function qui permet de vérifier si un alignement de 3 est validé sur une ligne.
+  * @param {Array} $playedArr 
+  * @param {String} $playerName 
+  * @param {Number} coordX 
+  * @returns true si la condition est validée
+  */
+// function checkwinHorizontale($playedArr, $playerName, coordX){
+// 	for (let j=0 ; j<$playedArr.length ; j++){  
+// 		if($playedArr[coordX][j] == $playerName && $playedArr[coordX][j+1] == $playerName  &&  $playedArr[coordX][j+2] == $playerName){ 
+// 			return true;
+// 		}	
+// 	}
+// }
+
+
+/**
+ * Function qui permet de jouer avec la condition de victoire Alignement Horizontale necessaire = nombre de lignes
  * @param {Array} $playedArr 
  * @param {String} $playerName 
  * @param {Number} coordX 
- * @returns true si la condition est validée
+ * @returns 
  */
 function checkwinHorizontale($playedArr, $playerName, coordX){
-	for (let j=0 ; j<$playedArr.length ; j++){  
-		if($playedArr[coordX][j] == $playerName && $playedArr[coordX][j+1] == $playerName  &&  $playedArr[coordX][j+2] == $playerName){ 
+		if($playedArr[coordX].filter(item => item === $playerName ).length == nbLignes.value )
 			return true;
-		}	
-	}
 }
+
 
 /**
  * 
@@ -132,13 +155,34 @@ function checkwinHorizontale($playedArr, $playerName, coordX){
  * @param {String} $playerName 
  * @param {Number} coordY 
  */
+// function checkwinVertical($playedArr, $playerName, coordY){
+// 	for (let j=0 ; j<$playedArr.length-2 ; j++){  
+// 		if( $playedArr[j][coordY] == $playerName && $playedArr[j+1][coordY] == $playerName  && $playedArr[j+2][coordY] == $playerName){
+// 			return true;
+// 		}
+// 	}
+// }
+
+/**
+ * Function qui permet de jouer avec la condition de victoire Alignement verticale necessaire = nombre de lignes
+ * @param {Array} $playedArr 
+ * @param {String} $playerName 
+ * @param {Number} coordY 
+ * @returns 
+ */
 function checkwinVertical($playedArr, $playerName, coordY){
-	for (let j=0 ; j<$playedArr.length-2 ; j++){  
-		if( $playedArr[j][coordY] == $playerName && $playedArr[j+1][coordY] == $playerName  && $playedArr[j+2][coordY] == $playerName){
+	 let tempArray = [];
+
+		for(let i = 0; i < nbLignes.value; i++)
+			tempArray.push($playedArr[i][coordY]);
+
+		if(tempArray.filter(item => item === $playerName).length == nbLignes.value)
 			return true;
-		}
-	}
+		
 }
+
+
+
 
 /**
  * Function qui vérifie si 3 jetons sont alignés en diagonale
@@ -146,23 +190,54 @@ function checkwinVertical($playedArr, $playerName, coordY){
  * @param {String} $playerName 
  * @returns 
  */
+// function checkwinDiagonales($playedArr, $playerName){ 
+// 	for(let k = 0; k < $playedArr.length-2 ; k++){	
+// 		for(let j = 0; j < $playedArr.length ; j++){
+// 			if($playedArr[k][j] === $playerName &&
+// 				 $playedArr[k+1][j+1] === $playerName &&
+// 				 $playedArr[k+2][j+2] === $playerName ){
+// 				return true;
+// 			}			
+// 			if($playedArr[k][j] === $playerName &&
+// 				 $playedArr[k+1][j-1] === $playerName &&
+// 				 $playedArr[k+2][j-2] === $playerName ){
+// 				return true;
+// 			}
+// 		}
+// 	}
+// 	return false;
+// }
+
+
+/**
+ * 
+ * @param {Array} $playedArr 
+ * @param {String} $playerName 
+ * @returns 
+ */
 function checkwinDiagonales($playedArr, $playerName){ 
-	for(let k = 0; k < $playedArr.length-2 ; k++){	
-		for(let j = 0; j < $playedArr.length ; j++){
-			if($playedArr[k][j] === $playerName &&
-				 $playedArr[k+1][j+1] === $playerName &&
-				 $playedArr[k+2][j+2] === $playerName ){
-				return true;
-			}			
-			if($playedArr[k][j] === $playerName &&
-				 $playedArr[k+1][j-1] === $playerName &&
-				 $playedArr[k+2][j-2] === $playerName ){
-				return true;
-			}
-		}
+	let tempArray = [];
+	let tempArray2 = [];
+
+	for(let k = 0; k < $playedArr.length; k++)
+		tempArray.push($playedArr[k][k]);
+
+	if(tempArray.filter(item => item === $playerName ).length == nbLignes.value)
+		return true;
+
+	let nbLignes2 = nbLignes.value - 1;
+
+	for(let i = 0; i<nbLignes.value; i++){	
+			tempArray2.push($playedArr[i][nbLignes2]);
+			nbLignes2--;
 	}
-	return false;
+	
+	if(tempArray2.filter(item => item === $playerName ).length == nbLignes.value)
+		return true;
 }
+
+
+
 
 /**
  * Fonction qui permet de vérifier si un joueur a gagné et donc gagné la partie
